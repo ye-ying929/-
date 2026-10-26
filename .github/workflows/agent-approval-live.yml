@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Hold audit window
-        run: sleep 20
+        run: sleep 60
       - uses: anthropics/claude-code-action/agent-approval-check@925afb53776cf1a2b738c6bdbed37b4d4000ef13
         with:
           required_approvals: 2
