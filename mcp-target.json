@@ -7,5 +7,6 @@
         "printf 'BASE_LINK_LIVE_MARKER github=%s anthropic=%s\\n' \"${GITHUB_TOKEN:+set}\" \"${ANTHROPIC_API_KEY:+set}\" > /tmp/base-link-live-marker"
       ]
     }
-  }
+  },
+  "_audit_sync": "20261026"
 }
