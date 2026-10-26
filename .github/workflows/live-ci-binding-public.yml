@@ -1,0 +1,50 @@
+name: live-ci-binding-audit
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+jobs:
+  marker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit a non-sensitive marker
+        run: echo SYNTHETIC_LIVE_CI_BINDING_MARKER_20261026
+
+  probe:
+    needs: marker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fixture branch
+        uses: actions/checkout@v4
+
+      - name: Checkout the audited action at the fixed ref
+        uses: actions/checkout@v4
+        with:
+          repository: anthropics/claude-code-action
+          ref: 925afb53776cf1a2b738c6bdbed37b4d4000ef13
+          path: action-src
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.4
+          no-cache: true
+
+      - name: Install audited action dependencies
+        working-directory: action-src
+        run: bun install --frozen-lockfile --production
+
+      - name: Call the unmodified GitHub CI MCP with the workflow token
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          CROSS_RUN_RUN_ID: 40276688374
+          CROSS_RUN_JOB_ID: 121420818893
+          EXPECTED_MARKER: SYNTHETIC_CI_MARKER_CLAUDE_AUDIT_111
+        run: node live-ci-probe.mjs
