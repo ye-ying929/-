@@ -12,14 +12,16 @@ permissions:
 
 jobs:
   probe:
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '@impact-write-probe')
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '@claude') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR head for controlled fixture
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.repository }}
           ref: refs/pull/${{ github.event.issue.number }}/head
-          fetch-depth: 1
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Start loopback 401 API stub
         shell: bash
@@ -38,6 +40,7 @@ jobs:
           PY
 
       - name: Run fixed Claude Code Action against the PR head
+        continue-on-error: true
         uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
