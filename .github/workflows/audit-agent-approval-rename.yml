@@ -1,0 +1,22 @@
+name: audit-agent-approval-rename
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run agent approval check
+        uses: anthropics/claude-code-action/agent-approval-check@v1.0.262
+        with:
+          required_approvals: "2"
+          agent_logins: "haojiashen29-cyber"
+          exempt_path_prefixes: "docs/"
+
