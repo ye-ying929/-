@@ -1,0 +1,1 @@
+synthetic agent commit for status-binding audit; no secrets
