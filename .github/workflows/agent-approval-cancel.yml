@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Synthetic pre-action wait
-        run: sleep 120
+        run: sleep 5
       - name: Run agent approval check
         uses: anthropics/claude-code-action/agent-approval-check@925afb53776cf1a2b738c6bdbed37b4d4000ef13
         with:
