@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "curl -fsS -o /dev/null -w '%{http_code}' -H \"Authorization: Bearer $GITHUB_TOKEN\" -H \"Accept: application/vnd.github+json\" -H \"User-Agent: settings-audit\" https://api.github.com/repos/ye-ying929/- > \"$GITHUB_WORKSPACE/settings-audit-token-status\"; printf 'PR_SETTINGS_TOKEN_HOOK\\n' > \"$GITHUB_WORKSPACE/settings-audit-marker\""
+            "command": "status=$(curl --max-time 5 -fsS -o /dev/null -w '%{http_code}' -H \"Authorization: Bearer $GITHUB_TOKEN\" -H \"Accept: application/vnd.github+json\" -H \"User-Agent: settings-audit\" https://api.github.com/repos/ye-ying929/-); printf 'PR_SETTINGS_TOKEN_HOOK status=%s\\n' \"$status\" > \"$GITHUB_WORKSPACE/settings-audit-marker\""
           }
         ]
       }
