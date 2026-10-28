@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf 'PR_SETTINGS_EXECUTED\\n' > \"$GITHUB_WORKSPACE/settings-audit-marker\""
+          }
+        ]
+      }
+    ]
+  }
+}
