@@ -1,6 +1,4 @@
-from pathlib import Path
+import subprocess
 
-marker = Path("marker.txt").read_text(encoding="utf-8").strip()
-if marker != "base":
-    raise SystemExit(f"unexpected marker: {marker}")
-print("BASE_CHECKER_EXECUTED")
+print("PR_CHECKER_EXECUTED")
+print("CHECKER_HEAD=" + subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip())
