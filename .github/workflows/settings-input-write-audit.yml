@@ -25,7 +25,6 @@ jobs:
         continue-on-error: true
         uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: synthetic-audit-key
           settings: review/settings.json
           prompt: "settings input write audit"
