@@ -1,0 +1,17 @@
+name: OIDC Fork Permission Probe
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  probe:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm base guard
+        run: echo "fork guard active"
