@@ -1,17 +1,44 @@
-name: OIDC Fork Permission Probe
+name: Claude Code Review OIDC Probe
 
 on:
   pull_request:
     types: [opened, synchronize]
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
-  probe:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  oidc-probe:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
     steps:
-      - name: Confirm base guard
-        run: echo "fork guard active"
+      - name: Request a token and report only its event claim
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          response_file="$RUNNER_TEMP/oidc-response.json"
+          trap 'rm -f "$response_file"' EXIT
+          if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
+            echo "OIDC_REQUEST_ENV=unavailable"
+            exit 0
+          fi
+          status=$(curl -sS -o "$response_file" -w '%{http_code}' \
+            -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=codex-fork-permission-probe")
+          echo "OIDC_HTTP_STATUS=$status"
+          if [[ "$status" == "200" ]]; then
+            node - "$response_file" <<'NODE'
+          const fs = require("fs");
+          const response = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+          const token = response.value;
+          if (typeof token !== "string") {
+            console.log("OIDC_MINTED=false");
+            process.exit(0);
+          }
+          const claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8"));
+          console.log("OIDC_MINTED=true");
+          console.log("OIDC_EVENT_NAME=" + (claims.event_name || "unknown"));
+          NODE
+          fi
